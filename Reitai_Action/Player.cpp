@@ -30,7 +30,7 @@ void Player::Calc(){
 	dx = vx;
 	dy = vy;
 
-	//ç∂
+	//
 	if ((nowMap->getMapdata(x - size / 2 + size, y - size / 2   ) == 1) ||//ç∂è„
 		(nowMap->getMapdata(x - size / 2,y) == 1) ||//ç∂ê^ÇÒíÜ
 		(nowMap->getMapdata(x - size / 2 ,   y + size / 2 - 1  ) == 1))//ç∂â∫
