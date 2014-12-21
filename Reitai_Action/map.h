@@ -8,7 +8,7 @@ public:
 	MAP(int st)throw(int);
 	~MAP();
 	void Init();
-	void Draw();
+	void Draw(int,int);
 	void Load(int st)throw(int);
 	int getWidth(){ return width; };
 	int getHeight(){ return height; };

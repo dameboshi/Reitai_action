@@ -9,7 +9,7 @@ enum GAMESTATE{
 
 class Game{
 private:
-	int Sx, Sy;//画面サイズ
+	static int Sx, Sy;//画面サイズ
 	int Cb;//カラービット数
 	int timer;
 
@@ -25,4 +25,6 @@ private:
 public:
 	void doMainLoop(int);
 	void loadfile()throw(int);
+	static int getSx(){ return Sx; };
+	static int getSy(){ return Sy; };
 };

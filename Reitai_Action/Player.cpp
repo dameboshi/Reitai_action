@@ -6,11 +6,13 @@
 Player::Player(){
 	x = 0;
 	y = 0;
-	vx = vy = 0;
+	vx = vy = 1;
 	alive = 0;
 	direction = 0;
 	jump_count = 0;
 	jump_flag = 0;
+	onGround = 0;
+	state = RUN;
 }
 
 void Player::Init(int x,int y){
@@ -23,7 +25,7 @@ void Player::Init(int x,int y){
 void Player::Calc(){
 	if (!alive)return;
 
-
+	
 	//縦
 	x += vx;
 
@@ -33,7 +35,7 @@ void Player::Calc(){
 	//左
 	if ((nowMap->getMapdata(x - size / 2 + size, y - size / 2   ) == 1) ||//左上
 		(nowMap->getMapdata(x - size / 2,y) == 1) ||//左真ん中
-		(nowMap->getMapdata(x - size / 2 ,   y + size / 2 - 1  ) == 1))//左下
+		(nowMap->getMapdata(x - size / 2 ,   y + size / 2   ) == 1))//左下
 	{
 		if (dx < 0)x = x - dx;
 		vx = 0;
@@ -41,7 +43,7 @@ void Player::Calc(){
 	//右
 	if ((nowMap->getMapdata(x + size / 2   , y - size / 2   ) == 1) ||//右上
 		(nowMap->getMapdata(x + size / 2   , y) == 1) ||//右真ん中
-		(nowMap->getMapdata(x + size / 2   , y + size / 2 - 1 ) == 1))//右下
+		(nowMap->getMapdata(x + size / 2   , y + size / 2  ) == 1))//右下
 	{
 		if (dx > 0)x = x - dx;
 		vx = 0;
@@ -57,25 +59,53 @@ void Player::Calc(){
 	{
 		if (dy < 0)y = y - dy;
 		y = (y / 32) * 32;
+		jump_flag = 1;
 		vy = 0;
 	}
 	//下
 	if ((nowMap->getMapdata(x + size / 2   , y + size / 2   ) == 1) ||//下右
-		(nowMap->getMapdata(x, y + size / 2   ) == 1) ||//下真ん中
+		(nowMap->getMapdata(x, y + size / 2  ) == 1) ||//下真ん中
 		(nowMap->getMapdata(x - size / 2   , y + size / 2   ) == 1))//下左
 	{
+		onGround = 0;
+		//ジャンプ関連の処理 長押しすると連続ジャンプになるから……
+		if (_pad.PadGet(B_1) < 1){
+			jump_flag = 0;
+			jump_count = 0;
+		}
 		if (dy > 0)y = y - dy;
 		y = (y / 32) * 32;
 		vy = 0;
-		jump_flag = 0;
-		jump_count = 0;
 		state = WALK;
 	}
-	else state = JUMP;
+	else onGround = 1;
 
-	
+	//ジャンプしようぜ
+	//ちょっと微妙
+	if (jump_flag == 0){
+		if (_pad.PadGet(B_1) > 0 && jump_count < 8){
+			state = JUMP;
+			vy = -10.0;
+			jump_count++;
+		}
+		else{
+			if (state == JUMP){
+				jump_flag = 1;
+			}
+		}
+	}
 
-	
+	if (onGround == 1){
+		state = JUMP;
+	}
+
+	//重力的な
+	if (state == JUMP){
+		vy += 1;
+		if (vy > 8)vy = 8;
+	}
+
+
 	/*
 
 	//----マップとの当たり判定----//
@@ -137,7 +167,6 @@ void Player::Calc(){
 	if (x + size / 2 > nowMap->getWidth())x = nowMap->getWidth() - size / 2;
 
 	if (y + size / 2 > nowMap->getHeight()){
-		
 		y = nowMap->getHeight() - size / 2;
 	}
 
@@ -153,12 +182,6 @@ void Player::Calc(){
 		vx = -3.0;
 	}
 
-	//重力的な
-	if (state == JUMP){
-		vy += 1;
-		if (vy > 8)vy = 8;
-	}
-
 	//摩擦力的な
 	if (state == RUN || state == WALK){
 		vy = 0;
@@ -172,21 +195,12 @@ void Player::Calc(){
 		}
 	}
 
-	//ジャンプしようぜ
-	//ちょっと微妙
-	if (jump_flag==0){
-		if (_pad.PadGet(B_1) > 0 && jump_count < 8){
-			state = JUMP;
-			vy = -8.0;
-			jump_count++;
-		}
-		else{
-			jump_flag = 1;
-		}
-	}
 }
 
-void Player::Draw(){
+void Player::Draw(int sx,int sy){
 	if (!alive)return;
-	DrawBox(x - size / 2, y - size / 2, x + size / 2, y + size / 2, BLACK, true);
+	DrawBox(x - size / 2 - sx , y - size / 2, x + size / 2 - sx, y + size / 2, BLACK, true);
+
+	DrawFormatString(0, 80, BLACK, "jump_flag = %d,jump_count = %d \n", jump_flag,jump_count);
+	DrawFormatString(0, 100, BLACK, "state = %d\n", state);
 }

@@ -4,6 +4,8 @@
 #include "maingame.h"
 
 MainGame *maingame;
+int Game::Sx;
+int Game::Sy;
 
 void Game::doMainLoop(int scmode){
 	ChangeWindowMode(scmode);

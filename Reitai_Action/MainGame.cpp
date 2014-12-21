@@ -4,6 +4,7 @@
 
 MAP *nowMap;
 Player *player;
+Camera camera;
 
 MainGame::MainGame(int sn){
 	stagenumber = sn;
@@ -15,7 +16,6 @@ MainGame::MainGame(int sn){
 		return;
 	}
 	player = new Player();
-
 	Init();
 }
 
@@ -23,6 +23,7 @@ void MainGame::Calc(){
 	player->Calc();
 
 	BaseState::Calc();
+	camera.ScrollMove(player->getX()-nowMap->getFirstX(), player->getY()-nowMap->getFirstY());
 }
 
 void MainGame::Init(){
@@ -30,10 +31,10 @@ void MainGame::Init(){
 }
 
 void MainGame::Draw(){
-	nowMap->Draw();
+	nowMap->Draw(camera.scrollx, camera.scrolly);
 	DrawFormatString(0, 20, BLACK, "width = %d,height = %d ", nowMap->getWidth(), nowMap->getHeight());
 	DrawFormatString(0, 40, BLACK, "first_x = %d,first_y = %d ", nowMap->getFirstX(), nowMap->getFirstY());
-	player->Draw();
+	player->Draw(camera.scrollx,camera.scrolly);
 	//printfDx("x = %f.0,y = %f.0 \n",player->getX(),player->getY());
 	DrawFormatString(0, 0, BLACK, "x = %.0f,y = %.0f \n", player->getX(), player->getY());
 }

@@ -60,7 +60,7 @@ MAP::MAP(int stagenumber)throw(int)
 	
 	FileRead_close(filehandle);
 	
-
+	/*
 	for (int i = 0; i < height / MAP_SIZE; i++)
 	{
 		for (int j = 0; j < width / MAP_SIZE; j++){
@@ -68,6 +68,7 @@ MAP::MAP(int stagenumber)throw(int)
 		}
 		printfDx("\n");
 	}
+	*/
 	//デバッグ用
 	/*
 	first_x = 100;
@@ -85,7 +86,7 @@ MAP::~MAP()
 void MAP::Load(int stagenumber){
 }
 
-void MAP::Draw(){
+void MAP::Draw(int sx,int sy){
 
 	for (int i = 0; i < height/MAP_SIZE; i++){
 		for (int j = 0; j < width/MAP_SIZE; j++){
@@ -94,7 +95,7 @@ void MAP::Draw(){
 			case 0:
 				break;
 			case 1:
-				DrawBox(j * MAP_SIZE, i * MAP_SIZE, j * MAP_SIZE + MAP_SIZE, i * MAP_SIZE + MAP_SIZE, BLACK, FALSE);
+				DrawBox(j * MAP_SIZE -sx, i * MAP_SIZE, j * MAP_SIZE + MAP_SIZE -sx, i * MAP_SIZE + MAP_SIZE, BLACK, FALSE);
 				break;
 			default:
 				break;
